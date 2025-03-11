@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package recording;
+
+option go_package = "synxrondrive/pkg/proto/recording_v1/recording";
+
+service RecordingService {
+  // Сохраняет запись конференции в Synxrondrive
+  rpc SaveRecording (SaveRecordingRequest) returns (SaveRecordingResponse) {}
+}
+
+message SaveRecordingRequest {
+  string user_id = 1;           // ID пользователя
+  string file_name = 2;         // Имя файла записи
+  string file_path = 3;         // Путь к файлу с записью
+  int64 size_bytes = 4;         // Размер файла
+  string mime_type = 5;         // MIME тип файла
+  string recording_id = 6;      // ID записи (egress_id)
+  string room_id = 7;           // ID комнаты
+}
+
+message SaveRecordingResponse {
+  string file_id = 1;           // UUID сохраненного файла
+  string folder_id = 2;         // ID папки "Записи"
+}

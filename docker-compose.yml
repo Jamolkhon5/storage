@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: filemanager-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=filemanager
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: filemanager-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_NAME=filemanager
+      - DATABASE_SSLMODE=disable
+      - HTTP_PORT=2525
+      - GRPC_PORT=50051
+    volumes:
+      - preview_cache:/tmp/previews  # Том для кеша превью
+    ports:
+      - "2525:2525"
+      - "50051:50051"
+    networks:
+      - network
+      - sinhron
+
+networks:
+  sinhron:
+    external: true
+  network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  preview_cache:

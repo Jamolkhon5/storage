@@ -1,0 +1,186 @@
+syntax = "proto3";
+
+package auth_v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/Naumovets/go-auth/pkg/auth_v1;auth_v1";
+
+service AuthV1 {
+    // Register a new user.
+    //
+    // Response is the refresh token.
+    // Get and use the access token after getting the refresh token.
+    rpc Register (RegisterRequest) returns (RegisterResponse){
+        option (google.api.http) = {
+            post: "/v1/auth/register"
+            body: "*"
+        };
+    }
+    // Login the user
+    //
+    // Response is the refresh token.
+    // Get and use the access token after getting the refresh token.
+    rpc Login (LoginRequest) returns (LoginResponse){
+        option (google.api.http) = {
+            post: "/v1/auth/login"
+            body: "*"
+        };
+    }
+
+    // Get the users by ids
+    rpc GetUsersByIds (GetUsersByIdsRequest) returns (GetUsersByIdsResponse){
+        option (google.api.http) = {
+            post: "/v1/users/list"
+            body: "*"
+        };
+    }
+
+    // Get the user info by id
+    rpc GetUserById(GetUserByIdRequest) returns (GetUserByIdResponse){
+        option (google.api.http) = {
+            get: "/v1/users/{id}"
+        };
+    }
+    // Get the user info
+    //
+    // You need use the header "Authorization" in the http request with the access token.
+    // The format of the access token: "Bearer eyJhbGciOiJI..."
+    rpc GetUser (google.protobuf.Empty) returns (GetUserInfoResponse){
+        option (google.api.http) = {
+            get: "/v1/users/me"
+        };
+    }
+    // Update the user info
+    //
+    // You need use the header "Authorization" in the http request with the access token.
+    // The format of the access token: "Bearer eyJhbGciOiJI..."
+    rpc UpdateUser (UpdateUserRequest) returns (google.protobuf.Empty){
+        option (google.api.http) = {
+            patch: "/v1/users/me"
+            body: "*"
+        };
+    }
+    // Delete the user
+    //
+    // Your need use the header "Authorization" in the http request with the access token.
+    // The format of the access token: "Bearer eyJhbGciOiJI..."
+    rpc DeleteUser (google.protobuf.Empty) returns (google.protobuf.Empty){
+        option (google.api.http) = {
+            delete: "/v1/users/me"
+        };
+    }
+    // Update the refresh token
+    //
+    // Use this method for updating your refresh token.
+    // Request data is the refresh token.
+    // Response is the new refresh token.
+    rpc GetRefreshToken (GetRefreshTokenRequest) returns (GetRefreshTokenResponse){
+        option (google.api.http) = {
+            post: "/v1/auth/refresh"
+            body: "*"
+        };
+    }
+    // Getting the new access token
+    // 
+    // Request data is the refresh token.
+    // Response is the new access token.
+    rpc GetAccessToken (GetAccessTokenRequest) returns (GetAccessTokenResponse){
+        option (google.api.http) = {
+            post: "/v1/auth/access"
+            body: "*"
+        };
+    }
+}
+
+message User {
+    string id = 1;
+    string email = 2;
+    string name = 3;
+    string lastname = 4;
+    string description = 5;
+    string website = 6;
+    string company = 7;
+    string phone = 8;
+    string address = 9;
+    string profession = 10;
+    string city = 11;
+    int32 postal_code = 12;
+    string country = 13;
+    string photo = 14;
+    string banner = 15;
+}
+
+message UpdateUserRequest {
+    google.protobuf.StringValue name = 3;
+    google.protobuf.StringValue lastname = 4;
+    google.protobuf.StringValue description = 5;
+    google.protobuf.StringValue website = 6;
+    google.protobuf.StringValue company = 7;
+    google.protobuf.StringValue phone = 8;
+    google.protobuf.StringValue address = 9;
+    google.protobuf.StringValue profession = 10;
+    google.protobuf.StringValue city = 11;
+    google.protobuf.Int32Value postal_code = 12;
+    google.protobuf.StringValue country = 13;
+    google.protobuf.StringValue photo = 14;
+    google.protobuf.StringValue banner = 15;
+}
+
+message GetUserInfoResponse {
+    User user = 1;
+}
+
+message GetUsersByIdsRequest {
+    repeated string ids = 1;
+}
+
+message GetUsersByIdsResponse {
+    repeated User users = 1;
+}
+
+message GetUserByIdRequest {
+    string id = 1;
+}
+
+message GetUserByIdResponse {
+    User user = 1;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string password = 2;
+    string name = 3;
+    string lastname = 4;
+}
+
+message RegisterResponse {
+    string refresh_token = 1;
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    string refresh_token = 1;
+}
+
+message GetRefreshTokenRequest {
+    string refresh_token = 1;
+}
+
+message GetRefreshTokenResponse {
+    string refresh_token = 1;
+}
+
+message GetAccessTokenRequest {
+    string refresh_token = 1;
+}
+
+message GetAccessTokenResponse {
+    string access_token = 1;
+}
