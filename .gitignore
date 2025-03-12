@@ -1,2 +1,6 @@
-".s3.env" 
-"credentials" 
+.s3.env
+credentials
+.auth.env
+.app.env
+docker-compose.yml
+.config
